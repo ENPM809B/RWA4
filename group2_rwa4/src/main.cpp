@@ -167,11 +167,6 @@ public:
     joint_trajectory_publisher.publish(msg);
   }
 
-  void logical_camera_callback_1(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg){
-    ROS_INFO_STREAM_THROTTLE(10,
-      "Logical camera: '" << image_msg->models.size() << "' objects.");
-  }
-
   void logical_camera_callback_4(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg)
   {
     ROS_INFO_STREAM_THROTTLE(10,
@@ -283,7 +278,6 @@ int main(int argc, char ** argv) {
   ros::Subscriber orders_subscriber = node.subscribe("/ariac/orders", 10,&Competition::order_callback, &comp_class);
   ros::Subscriber proximity_sensor_subscriber = node.subscribe("/ariac/proximity_sensor_1", 10, proximity_sensor_callback);
   ros::Subscriber break_beam_subscriber_1 = node.subscribe("/ariac/break_beam_1_change", 10, &Competition::break_beam_callback_1, &comp_class);
-  ros::Subscriber logical_camera_subscriber_1 = node.subscribe("/ariac/logical_camera_1", 10, &Competition::logical_camera_callback_1, &comp_class);
   ros::Subscriber logical_camera_subscriber_4 = node.subscribe("/ariac/logical_camera_4", 10, &Competition::logical_camera_callback_4, &comp_class);
   ros::Subscriber logical_camera_subscriber_5 = node.subscribe("/ariac/logical_camera_5", 10, &Competition::logical_camera_callback_5, &comp_class);
   ros::Subscriber laser_profiler_subscriber = node.subscribe("/ariac/laser_profiler_1", 10, laser_profiler_callback);
