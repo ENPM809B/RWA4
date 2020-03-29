@@ -1,14 +1,14 @@
 sensors:
-  break_beam_1:
-    type: break_beam
-    pose:
-      xyz: [1.6, 2.25, 0.91]
-      rpy: [0, 0, 'pi']
+  # break_beam_1:
+  #   type: break_beam
+  #   pose:
+  #     xyz: [1.6, 2.25, 0.91]
+  #     rpy: [0, 0, 'pi']
 
   break_beam_2:
     type: break_beam
     pose:
-      xyz: [1.6, 0.77, 0.91]
+      xyz: [1.6, 2.10, 0.91] #y = 0.77 - 2.07
       rpy: [0, 0, 'pi']
 
   proximity_sensor_1:
