@@ -211,7 +211,7 @@ public:
   {
     auto imageMessage = *image_msg ;  
     int obj_count = 1;  
-    ros::Duration timeout(1.0);
+    // ros::Duration timeout(1.0);
     tf2_ros::Buffer tfBuffer;
     tf2_ros::TransformListener tfListener(tfBuffer);     
     while(obj_count <= image_msg->models.size()){
@@ -336,6 +336,7 @@ ros::ServiceClient gripper_client_2;
 void GripperCallback(
         const osrf_gear::VacuumGripperState::ConstPtr& grip) {
     gripper_state_1 = grip->attached;
+    // ROS_INFO_STREAM(gripper_state_1);
 }
 
 
@@ -367,6 +368,7 @@ int main(int argc, char ** argv) {
 
   int return_counter = 0;
 
+  //move() is blocking, requires asyn spinner
   ros::AsyncSpinner spinner(1);
   spinner.start();
 
@@ -468,7 +470,9 @@ int main(int argc, char ** argv) {
   // ROS_INFO("X: %f", comp_class.x_grab);
   // grab_pose.position.y = comp_class.y_grab;
   // ROS_INFO("Y: %f", comp_class.y_grab);
-  grab_pose.position.z = 0.928;
+  grab_pose.position.z = 0.928; //928
+
+
 
   while (ros::ok()){
         /*if(return_counter > 0){
@@ -480,21 +484,28 @@ int main(int argc, char ** argv) {
         }*/
         // ros::Subscriber logical_camera_subscriber_5 = node.subscribe("/ariac/logical_camera_5", 10, &Competition::logical_camera_callback_5, &comp_class);
         // grab_pose.position.y = comp_class.y_grab;
+        ROS_INFO("X pos: %d",ObjectOnBelt.object);
+        ROS_INFO("Y pos: %d",break_beam_counter);
         if(grab_now_1 == true && ObjectOnBelt.object==break_beam_counter && ObjectOnBelt.arm1_engage == true){
+            //delay added to avoid multiple break beam detection
+            ros::Duration(1.0).sleep();
             ros::Subscriber logical_camera_subscriber_5 = node.subscribe("/ariac/logical_camera_5", 10, 
               &Competition::logical_camera_callback_5, &comp_class);
             grab_pose.position.x = comp_class.x_grab;
             grab_pose.position.y = comp_class.y_grab-0.15;
-            ROS_INFO("X pos: %f",grab_pose.position.x);
-            ROS_INFO("Y pos: %f",grab_pose.position.y);
+            // ROS_INFO("X pos: %d",ObjectOnBelt.object);
+            // ROS_INFO("Y pos: %d",break_beam_counter);
             robot_move_group.setPoseTarget(grab_pose);
             GripperToggle(true);
             moveit::planning_interface::MoveGroupInterface::Plan grab_plan;
             robot_move_group.move();
             
             grab_now_1 = false;
-            ObjectOnBelt.arm1_engage = false;            
+            ObjectOnBelt.arm1_engage = false; 
+            // ros::Duration(5.0).sleep();  
+            ROS_INFO("Gripper state: %d", gripper_state_1);    
             if (gripper_state_1){
+                ROS_INFO_STREAM("In if");
                 place_pose.position.x = 0.25;
                 place_pose.position.y = 1;
         				place_pose.position.z = 1.2;
@@ -509,8 +520,8 @@ int main(int argc, char ** argv) {
                 GripperToggle(false);
                 // return_counter++;
               } 
-              // robot_move_group.setPoseTarget(final);
-              // robot_move_group.move();
+              robot_move_group.setPoseTarget(final);
+              robot_move_group.move();
 
         }
   }
