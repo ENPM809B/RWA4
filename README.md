@@ -1,7 +1,7 @@
 # group2_rwa4
 Build Instructions...
 
-Change directory to "catkin_ws/src/group2_rwa4" and run following command in the terminal.
+Change directory to "catkin_ws/src/" and run following command in the terminal.
 
 ```
 git clone -b rachith https://github.com/ENPM809B/RWA4.git
