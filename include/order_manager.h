@@ -12,7 +12,7 @@
 #include <osrf_gear/LogicalCameraImage.h>
 #include <osrf_gear/Order.h>
 
-#include "ariac_order_part.h"
+#include "ariac_part.h"
 #include "robot_controller.h"
 
 //struct Order{
@@ -55,7 +55,7 @@ private:
 	std::string object;
 	std::map<std::string, std::vector<std::string>> product_frame_list_;
 	osrf_gear::Order order_;
-	bool taskPending__;
+	bool taskPending_;
 	bool isBinCameraOn_;
 	bool isOrderSegregated_;
 public:
@@ -67,13 +67,16 @@ public:
 	std::map<std::string, std::list<std::pair<std::string,geometry_msgs::Pose>>> GetOrder();
 	bool PickAndPlace(std::pair<std::string,geometry_msgs::Pose>,int );
 	std::vector<std::string> getProductType();
+
 	void readOrder();
 	void segregateOrder();
 	void SubmitAGV(int);
 	ros::NodeHandle* getnode();
+
 	void setBinCameraStatus(bool);
 	bool isOrderSegregated() const;
 	void setAllBinParts(std::map< std::string, std::map< std::string, std::vector< geometry_msgs::Pose > > >*);
 	void assignCurrentPose(std::vector<geometry_msgs::Pose>, std::vector<AriacPart>&);
+	std::map< std::string, std::vector<AriacPart> >* getConveyorBeltOrderParts();
 	void pathplanningCallback(const geometry_msgs::TransformStamped&);
 };

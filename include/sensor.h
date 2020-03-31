@@ -17,7 +17,7 @@
 #include <osrf_gear/LogicalCameraImage.h>
 #include <osrf_gear/Proximity.h>
 #include <order_manager.h>
-#include <ariac_order_part.h>
+#include <ariac_part.h>
 
 //class AriacOrderManager;
 

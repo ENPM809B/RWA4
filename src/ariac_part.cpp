@@ -2,51 +2,51 @@
 // Created by zeid on 3/1/20.
 //
 
-#include <ariac_order_part.h>
+#include <ariac_part.h>
 
-AriacOrderPart::AriacOrderPart()
+AriacPart::AriacPart()
 {}
 
-AriacOrderPart::AriacOrderPart(std::string type, std::string agv_id, geometry_msgs::Pose pose): part_type_(type), agv_id_(agv_id), end_pose_(pose)
+AriacPart::AriacPart(std::string type, std::string agv_id, geometry_msgs::Pose pose): part_type_(type), agv_id_(agv_id), end_pose_(pose)
 {}
 
-AriacOrderPart::~AriacOrderPart()
+AriacPart::~AriacPart()
 {}
 
-void AriacOrderPart::setPartType(std::string part_type) {
+void AriacPart::setPartType(std::string part_type) {
     part_type_ = part_type;
 }
 
-void AriacOrderPart::setPartEndPose(geometry_msgs::Pose part_pose) {
+void AriacPart::setPartEndPose(geometry_msgs::Pose part_pose) {
     end_pose_ = part_pose;
 //    end_pose_.position.z +=0.3;
 }
 
-void AriacOrderPart::setPartCurrentPose(geometry_msgs::Pose pose) {
+void AriacPart::setPartCurrentPose(geometry_msgs::Pose pose) {
     current_pose_ = pose;
 }
 
-void AriacOrderPart::setPartAgvID(std::string id){
+void AriacPart::setPartAgvID(std::string id){
 	agv_id_ = id;
 }
 
-std::string AriacOrderPart::getPartType() const {
+std::string AriacPart::getPartType() const {
     return part_type_;
 }
 
-geometry_msgs::Pose AriacOrderPart::getPartEndPose() const {
+geometry_msgs::Pose AriacPart::getPartEndPose() const {
     return end_pose_;
 }
 
-geometry_msgs::Pose AriacOrderPart::getPartCurrentPose() const {
+geometry_msgs::Pose AriacPart::getPartCurrentPose() const {
     return current_pose_;
 }
 
-std::string AriacOrderPart::getPartAgvID() const {
+std::string AriacPart::getPartAgvID() const {
 	return agv_id_;
 }
 
-//std::ostream& operator << (std::ostream& os, const AriacOrderPart& orderPart) {
+//std::ostream& operator << (std::ostream& os, const AriacPart& orderPart) {
 //	os << "shipment_type : " << orderPart.shipment_type << "\n";
 //	os << "agv_id : " << orderPart.agv_id << "\n";
 //	for(auto it = orderPart.products.begin(); it!=orderPart.products.end(); ++it){

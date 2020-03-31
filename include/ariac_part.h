@@ -3,7 +3,7 @@
 #include <string>
 #include <geometry_msgs/Pose.h>
 
-class AriacOrderPart {
+class AriacPart {
 private:
 	std::string part_type_;
 	geometry_msgs::Pose end_pose_;
@@ -11,9 +11,9 @@ private:
 	std::string agv_id_;
 
 public:
-	AriacOrderPart();
-	AriacOrderPart(std::string, std::string, geometry_msgs::Pose);
-	~AriacOrderPart();
+	AriacPart();
+	AriacPart(std::string, std::string, geometry_msgs::Pose);
+	~AriacPart();
 
 	// Setters
 	void setPartType(std::string);

@@ -118,54 +118,53 @@ void AriacSensorManager::getBinParts( const osrf_gear::LogicalCameraImage::Const
 }
 
 void AriacSensorManager::beltlogicalCameraCallback( const osrf_gear::LogicalCameraImage::ConstPtr & image_msg ) {
-	// order type same as camera type
 
-//	if( orderManager->isOrderSegregated() ){
-//		if ()
-//
-//	}
+	// when ordermanager finishes segregating orders
+	if( orderManager->isOrderSegregated() ){
+//		ROS_INFO_STREAM("Orders are Segregated, now let's pick up these parts" << std::endl);
+		auto belt_order_parts = orderManager->getConveyorBeltOrderParts(); // get belt order parts
 
+		auto sensor_pose = image_msg->pose;					// get sensor frame w.r.t world
+		geometry_msgs::TransformStamped tf_sensor_wrt_world;	// T matrix for conversion from sensor frame to world frame
 
-	auto sensor_pose = image_msg->pose;					// get sensor frame w.r.t world
-	geometry_msgs::TransformStamped tf_sensor_wrt_world;	// T matrix for conversion from sensor frame to world frame
-	convertPose(sensor_pose, tf_sensor_wrt_world);				// apply sensor_pose parameters to the T matrix
+		convertPose(sensor_pose, tf_sensor_wrt_world);				// apply sensor_pose parameters to the T matrix
 
-	auto order = orderManager->getProductType();	// vector of part type in the order
+//		auto order = orderManager->getProductType();	// vector of part type in the order
 
-	for(auto it = image_msg->models.begin(); it!=image_msg->models.end();++it) {
-		//		ROS_INFO_STREAM("debug : " << *it << std::endl);
+		for(auto it = image_msg->models.begin(); it!=image_msg->models.end();++it) {
 
+			for (auto order_it = belt_order_parts->begin(); order_it != belt_order_parts->end(); ++order_it) {
 
-		for (auto o_it = order.begin();o_it != order.end(); ++o_it) {
-			//			ROS_INFO_STREAM("debug : " << *o_it << std::endl);
-			if (tracking_part == nullptr && it->type.compare(*o_it)) {
-				tracking_part = new osrf_gear::Model();
-				tracking_part->type = it->type;
-				tracking_part->pose = it->pose;
-				geometry_msgs::Pose part_pose = it->pose;
-				try{
-					tf2::doTransform(part_pose, part_pose, tf_sensor_wrt_world);
+				if (tracking_part == nullptr && it->type.compare(order_it->first)) { // if camera part type == belt order type
+					tracking_part = new osrf_gear::Model();
+					tracking_part->type = it->type;
+					tracking_part->pose = it->pose;
+					geometry_msgs::Pose part_pose = it->pose;
+					try{
+						tf2::doTransform(part_pose, part_pose, tf_sensor_wrt_world);
+					}
+					catch (tf2::TransformException &ex) {
+						ROS_WARN("exception while converting child frame pose to world frame");
+						ROS_WARN("%s",ex.what());
+						ros::Duration(0.01).sleep();
+					}
+					geometry_msgs::TransformStamped tf;
+					convertPose(part_pose, tf);
+					transform_publisher.publish(tf);
+					//				ROS_INFO_STREAM("tracking part id: " << tracking_part->type << std::endl);
 				}
-				catch (tf2::TransformException &ex) {
-					ROS_WARN("exception while converting child frame pose to world frame");
-					ROS_WARN("%s",ex.what());
-					ros::Duration(0.01).sleep();
-				}
+			}
+
+			if (it->type.compare(tracking_part->type) == 0 && it->pose.position.z > tracking_part->pose.position.z ) {
+				convertPose(it->pose, tracking_part->pose);
 				geometry_msgs::TransformStamped tf;
-				convertPose(part_pose, tf);
+				convertPose(tracking_part->pose, tf);
 				transform_publisher.publish(tf);
-				//				ROS_INFO_STREAM("tracking part id: " << tracking_part->type << std::endl);
+	//			ROS_INFO_STREAM("Tracking type: " << tracking_part->type << std::endl);
+	//			ROS_INFO_STREAM("Tracking pose: \n" << tracking_part->pose << std::endl);
 			}
 		}
 
-		if (it->type.compare(tracking_part->type) == 0 && it-> pose.position.z > tracking_part->pose.position.z ) {
-			convertPose(it->pose, tracking_part->pose);
-			geometry_msgs::TransformStamped tf;
-			convertPose(tracking_part->pose, tf);
-			transform_publisher.publish(tf);
-//			ROS_INFO_STREAM("Tracking type: " << tracking_part->type << std::endl);
-//			ROS_INFO_STREAM("Tracking pose: \n" << tracking_part->pose << std::endl);
-		}
 	}
 }
 

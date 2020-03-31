@@ -12,7 +12,7 @@ AriacOrderManager::AriacOrderManager(ros::NodeHandle* nh): arm1_{"arm1"}
 	order_manager_nh_ = nh;
 	wayPoint_subscriber = order_manager_nh_->subscribe("/ariac/logical_sensor_4/tracking_object", 10, &AriacOrderManager::pathplanningCallback, this);
 	order_subscriber_ = order_manager_nh_->subscribe("/ariac/orders", 10, &AriacOrderManager::OrderCallback, this);
-	taskPending__ = true;
+	taskPending_ = true;
 	isBinCameraOn_ = false;
 	isOrderSegregated_ = false;
 }
@@ -30,7 +30,7 @@ void AriacOrderManager::OrderCallback(const osrf_gear::Order::ConstPtr& order_ms
 
 	readOrder();
 
-	while ( not isBinCameraOn )
+	while ( not isBinCameraOn_ )
 	{
 		ROS_INFO_STREAM("Waiting for bin camera to start..." << std::endl);
 		ros::Duration(1).sleep();
@@ -61,7 +61,7 @@ void AriacOrderManager::readOrder(){
 				AriacPart part(product.type, shipment.agv_id, product.pose); // create an AriacPart object
 
 				orders_[order_id][shipment_type].push_back(part); // This is just to create a copy of the order for future use, if need be
-				all_order_parts_[product.type].push_back(part);	// This is adding all parts by part type
+				all_order_parts_[product.type].push_back(part);	  // This is adding all parts by part type
 				product_type_pose_.first = product.type;
 				product_type.push_back(product.type);
 			}
@@ -128,6 +128,10 @@ void AriacOrderManager::assignCurrentPose(std::vector<geometry_msgs::Pose> binPo
 	for(int i=0; i<=min_length; ++i){
 		orderParts[i].setPartCurrentPose(binPoses[i]);
 	}
+}
+
+std::map< std::string, std::vector<AriacPart> >* AriacOrderManager::getConveyorBeltOrderParts() {
+	return &belt_order_parts_;
 }
 
 void AriacOrderManager::setBinCameraStatus(bool status){
@@ -287,8 +291,9 @@ ros::NodeHandle* AriacOrderManager::getnode() {
 }
 
 void AriacOrderManager::pathplanningCallback(const geometry_msgs::TransformStamped& msg) {
+
 	if(taskPending_) {
-		ROS_INFO("robot_controller_pathPlanning");
+		ROS_INFO("Picking up part from the conveyor belt");
 		double threshold_z = 0.1;
 		double threshold_y = 0.35;
 		geometry_msgs::Pose arm_base_part_pose;
